@@ -1,24 +1,87 @@
 layout {
-    pane size=1 borderless=true {
-        plugin location="zellij:tab-bar"
+    swap_floating_layout {
+		floating_panes max_panes=1 {
+			pane {
+				x "5%"
+				y "10%"
+				width "90%"
+				height "80%"
+			}
+		}
+		floating_panes max_panes=2 {
+			pane {
+				x 0
+				y "10%"
+				width "50%"
+				height "80%"
+			}
+			pane {
+				x "50%"
+				y "10%"
+				width "50%"
+				height "80%"
+			}
+		}
+		floating_panes max_panes=3 {
+			pane {
+				x 0
+				y "10%"
+				width "33%"
+				height "80%"
+			}
+			pane {
+				x "33%"
+				y "10%"
+				width "33%"
+				height "80%"
+			}
+			pane {
+				x "66%"
+				y "10%"
+				width "33%"
+				height "80%"
+			}
+		}
+	}
+    pane focus=true name="Helix" edit="."
+    pane size="10%" command="bash" name="COMPILE AND RELOAD PLUGIN" {
+        args "-c" "cargo build && zellij action start-or-reload-plugin file:target/wasm32-wasi/debug/zjhelix-interaction.wasm"
     }
-    pane split_direction="vertical" {
-        pane edit="src/main.rs"
-        pane {
-            pane edit="Cargo.toml"
-            pane stacked=true {
-                pane size="10%" command="bash" name="COMPILE AND RELOAD PLUGIN" {
-                    args "-c" "cargo build && zellij action start-or-reload-plugin file:target/wasm32-wasi/debug/rust-plugin-example.wasm"
-                    // if you have "watchexec" installed, you can comment the above line and uncomment the below one to build + reload the plugin on fs changes
-                    // args "-c" "watchexec 'cargo build && zellij action start-or-reload-plugin file:target/wasm32-wasi/debug/rust-plugin-example.wasm'"
-                }
-                pane expanded=true {
-                    plugin location="file:target/wasm32-wasi/debug/rust-plugin-example.wasm"
-                }
-            }
-        }
-    }
-    pane size=2 borderless=true {
-        plugin location="zellij:status-bar"
-    }
+	pane {
+		plugin location="file:target/wasm32-wasi/debug/zjhelix-interaction.wasm"
+	}
+	pane size=1 {
+		plugin location="https://github.com/dj95/zjstatus/releases/download/v0.16.0/zjstatus.wasm" {
+			format_left  "{mode} #[fg=white,bold]{session} {command_git_branch}"
+			format_right "{notifications} {datetime}"
+			format_space ""
+
+			mode_normal        "#[fg=black,bg=green] {name} "
+			mode_locked        "#[fg=black,bg=red] {name} "
+			mode_resize        "#[fg=black,bg=magenta] {name} "
+			mode_pane          "#[fg=black,bg=blue] {name} "
+			mode_scroll        "#[fg=black,bg=magenta] {name} "
+			mode_enter_search  "#[fg=black,bg=yellow] {name} "
+			mode_search        "#[fg=black,bg=yellow] {name} "
+			mode_rename_tab    "#[fg=black,bg=yellow] {name} "
+			mode_rename_pane   "#[fg=black,bg=yellow] {name} "
+			mode_session       "#[fg=black,bg=cyan] {name} "
+			mode_move          "#[fg=black,bg=white] {name} "
+			mode_prompt        "#[fg=black,bg=yellow] {name} "
+
+			command_git_branch_command     "git rev-parse --abbrev-ref HEAD"
+			command_git_branch_format      "#[fg=white,dim]⎇ {stdout}"
+			command_git_branch_interval    "10"
+			command_git_branch_rendermode  "static"
+
+			notification_format_unread           "#[fg=white,blink]  #[fg=green] {message} "
+			notification_format_no_notifications "#[fg=white,dim]   "
+			notification_show_interval           "10"
+
+			datetime        "#[fg=white,bold] {format}"
+			datetime_format "%A, %d %b %Y %H:%M"
+			datetime_timezone "Europe/Berlin"
+		}
+	}
+
 }
