@@ -38,7 +38,7 @@ impl ZellijPlugin for State {
                 for pane in panes {
                     if pane.title == name {
                         focus_terminal_pane(pane.id, false);
-                        write(vec![ESCAPE]);
+                        // write(vec![ESCAPE]);
                         write_chars(&payload);
                         write(vec![CARRIAGE_RETURN]);
                         break;
@@ -50,21 +50,16 @@ impl ZellijPlugin for State {
     }
 
     fn update(&mut self, event: Event) -> bool {
-        let should_render: bool;
         match event {
             Event::PaneUpdate(pane_manifest) => {
                 self.pane_manifest = Some(pane_manifest);
-                should_render = false;
             }
-            Event::PermissionRequestResult(permission_status) => {
-                match permission_status {
-                    PermissionStatus::Granted => hide_self(),
-                    PermissionStatus::Denied => show_self(true),
-                };
-                should_render = true;
-            }
-            _ => should_render = false,
+            Event::PermissionRequestResult(permission_status) => match permission_status {
+                PermissionStatus::Granted => hide_self(),
+                PermissionStatus::Denied => (),
+            },
+            _ => {}
         }
-        should_render
+        false
     }
 }
